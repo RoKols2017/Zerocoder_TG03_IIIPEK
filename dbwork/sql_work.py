@@ -49,7 +49,8 @@ def db_create(db_path):
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT,
         age INTEGER NOT NULL CHECK (age > 0 and age < 150),
-        grade INTEGER NOT NULL CHECK (grade > 0 and grade < 13))
+        grade TEXT
+    )
     """
     return sql_execute(db_path,query)
 
@@ -63,6 +64,7 @@ def db_select(db_path, tabel_name, cond = None,):
     if cond == None:
         query = f"SELECT * FROM {tabel_name}"
         return sql_select(db_path, query)
-    condition = " and ".join(f" {k} = {v}" for k, v in cond.items())
+    # Для строковых значений grade добавляем кавычки
+    condition = " and ".join(f" {k} = '{v}'" if isinstance(v, str) else f" {k} = {v}" for k, v in cond.items())
     query = f"SELECT * FROM {tabel_name} WHERE {condition} "
     return sql_select(db_path, query)
